@@ -1,4 +1,6 @@
 export default {
+    baseURL:"http://localhost:9000/api",
+    timeout:10000,
     api:{
         getContactList:{
             url : "/contactList",

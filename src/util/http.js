@@ -7,7 +7,7 @@ export default (axios,config={})=>{
     const api = config.api
 
     for (let name in api){
-      const {url,method,isForm,hooks} = api[name]
+      const {url,method,isForm,hooks,coseUrl} = api[name]
 
       if(hooks){
         api[name].beforeReq = hooks.beforeReq
@@ -25,6 +25,10 @@ export default (axios,config={})=>{
             }
           }else{
             transfromData = data
+          }
+          if(coseUrl){
+            url = coseUrl + url
+            coseUrl=""
           }
 
           let result = '';

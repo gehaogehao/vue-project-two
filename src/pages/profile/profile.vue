@@ -6,7 +6,7 @@
             </div>
         </header>
         <section class="profile-number">
-            <router-link to="/login" class="profile-link">
+            <a @click="goPath('/login')" class="profile-link">
                 <div class="profile_image">
                     <i class="iconfont icon-person"></i>
                 </div>
@@ -22,7 +22,7 @@
                 <span class="arrow">
                   <i class="iconfont icon-jiantou1"></i>
                 </span>
-            </router-link>
+            </a>
         </section>
         <section class="profile_info_data border-1px">
             <ul class="info_data_list">
@@ -97,7 +97,12 @@
 
 <script>
     export default {
-        name:"profile"
+        name:"profile",
+        methods: {
+            goPath(path){
+            this.$router.replace(path)
+            }
+        },
     }
 </script>
 
@@ -172,6 +177,7 @@
                     .icon-mobile-number
                         font-size 14px
                         color #fff
+                        margin-left 10px
             .arrow
                 width 12px
                 height 12px

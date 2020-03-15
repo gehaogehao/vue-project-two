@@ -317,7 +317,10 @@
 
 <script>
     export default {
-        name:"msite"
+        name:"msite",
+        async mounted() {
+            let result = await this.$http.msite.getPosition()
+        },
     }
 </script>
 
