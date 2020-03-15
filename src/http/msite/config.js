@@ -5,11 +5,24 @@ export default {
         getPosition:{
             url:'/position/40.10038,116.36867',
             method:'get',
-            coseUrl:"/4000"
+            crosUrl:"/4000",
+            hooks:{
+                beforeReq(crosUrl,url){
+                    console.log(url);
+                    if(url !== '/4000/position/40.10038,116.36867'){
+                        url = crosUrl + url
+                        return url
+                    }else{
+                        return url
+                    }
+                },
+                afterReq(){}
+            }
         }
     },
     hooks:{
-        beforeReq(){},
+        beforeReq(){
+        },
         afterReq(){}
     }
 }

@@ -7,7 +7,7 @@ export default (axios,config={})=>{
     const api = config.api
 
     for (let name in api){
-      const {url,method,isForm,hooks,coseUrl} = api[name]
+      const {url,method,isForm,hooks,crosUrl} = api[name]
 
       if(hooks){
         api[name].beforeReq = hooks.beforeReq
@@ -26,20 +26,20 @@ export default (axios,config={})=>{
           }else{
             transfromData = data
           }
-          if(coseUrl){
-            url = coseUrl + url
-            coseUrl=""
-          }
+          // if(crosUrl){
+          //   url = crosUrl + url
+          //   crosUrl=""
+          // }
 
           let result = '';
           switch (method){
               case 'get':
               case 'delete':
-                api[name].beforeReq && api[name].beforeReq()
+                url = api[name].beforeReq && api[name].beforeReq(crosUrl,url)
                 result = await axios({
                     url,
                     method,
-                    params:transfromData
+                    params:transfromData,
                 })
                 api[name].afterReq && api[name].afterReq()
                 break;
