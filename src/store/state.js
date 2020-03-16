@@ -1,3 +1,6 @@
 export default {
-    test:"test测试"
+    baseUrl:"https://fuss10.elemecdn.com",
+    addressObj:{},
+    categoryArr:[],
+    shopsArr:[]
 }

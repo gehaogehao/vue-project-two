@@ -3,8 +3,10 @@ import App from './App.vue'
 import router from '@/router'
 import store from '@/store'
 import http from '@/http'
+import header from 'components/header/header.vue'
 
 Vue.config.productionTip = false
+Vue.component('headerTo',header)
 Vue.prototype.$http = http
 
 new Vue({

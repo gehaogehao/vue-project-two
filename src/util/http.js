@@ -26,16 +26,17 @@ export default (axios,config={})=>{
           }else{
             transfromData = data
           }
-          // if(crosUrl){
-          //   url = crosUrl + url
-          //   crosUrl=""
-          // }
+          if(crosUrl){
+            url = crosUrl + url
+            crosUrl=""
+          }
 
           let result = '';
           switch (method){
               case 'get':
               case 'delete':
-                url = api[name].beforeReq && api[name].beforeReq(crosUrl,url)
+                // url = api[name].beforeReq && api[name].beforeReq(crosUrl,url)
+                api[name].beforeReq && api[name].beforeReq()
                 result = await axios({
                     url,
                     method,
