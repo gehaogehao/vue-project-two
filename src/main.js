@@ -4,6 +4,7 @@ import router from '@/router'
 import store from '@/store'
 import http from '@/http'
 import header from 'components/header/header.vue'
+import "@/util/validate.js"
 
 Vue.config.productionTip = false
 Vue.component('headerTo',header)

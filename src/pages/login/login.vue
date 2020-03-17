@@ -12,11 +12,16 @@
         <form>
           <div :class="{on : show === 'message'}">
             <section class="login_message">
-              <input type="tel" maxlength="11" placeholder="手机号" v-model.trim="phoneNumber"/>
-              <button :disabled="!showActive" class="get_verification" :class="{active:showActive}" @click.prevent="getCode">获取验证码</button>
+              <input type="tel" maxlength="11" placeholder="手机号" v-model.trim="phoneNumber"
+                     name='phone' v-validate="'required|mobile'"/>
+               <span style="color: red;" v-show="errors.has('phone')">{{ errors.first('phone') }}</span>
+              <button :disabled="!showActive" class="get_verification" 
+                      :class="{active:showActive}" @click.prevent="getCode">{{(time > 0) ?`已发送(${time})s`:`获取验证码`}}</button>
             </section>
             <section class="login_verification">
-              <input type="tel" maxlength="8" placeholder="验证码" />
+              <input type="tel" maxlength="6" placeholder="验证码" v-model="code" 
+                     name="code" v-validate="{required: true,regex: /^\d{6}$/}"/>
+              <span style="color: red;" v-show="errors.has('code')">{{ errors.first('code') }}</span>       
             </section>
             <section class="login_hint">
               温馨提示：未注册硅谷外卖帐号的手机号，登录时将自动注册，且代表已同意
@@ -26,22 +31,28 @@
           <div :class="{on : show === 'password'}">
             <section>
               <section class="login_message">
-                <input type="tel" maxlength="11" placeholder="手机/邮箱/用户名" />
+                <input type="tel" maxlength="11" placeholder="手机/邮箱/用户名" v-model="name"
+                name="name"  v-validate="'required'"/>
+                <span style="color: red;" v-show="errors.has('name')">{{ errors.first('name') }}</span>
               </section>
               <section class="login_verification">
-                <input type="tel" maxlength="8" placeholder="密码" />
-                <div class="switch_button off">
-                  <div class="switch_circle"></div>
+                <input :type="right?'text':'password'" maxlength="8" placeholder="密码" v-model="pwd"
+                        name="pwd" v-validate="'required'"/>
+                <div class="switch_button" :class="{on:right,off:!right}">
+                  <div class="switch_circle" :class="{right:right}" @click="right=!right"></div>
                   <span class="switch_text">...</span>
                 </div>
+                <span style="color: red;" v-show="errors.has('pwd')">{{ errors.first('pwd') }}</span>
               </section>
               <section class="login_message">
-                <input type="text" maxlength="11" placeholder="验证码" />
-                <img class="get_verification" src="./images/captcha.svg" alt="captcha" />
+                <input type="text" maxlength="4" placeholder="验证码" v-model="captcha"
+                       name="captcha" v-validate="{required: true,regex: /^[0-9a-zA-Z]{4}$/}"/>
+                <img class="get_verification" :src="captchaUrl" alt="captcha" @click="changeUrl"/>
+                <span style="color: red;" v-show="errors.has('captcha')">{{ errors.first('captcha') }}</span>
               </section>
             </section>
           </div>
-          <button class="login_submit">登录</button>
+          <button class="login_submit" @click.prevent="login">登录</button>
         </form>
         <a href="javascript:;" class="about_us">关于我们</a>
       </div>
@@ -53,21 +64,71 @@
 </template>
 
 <script>
+import {mapActions} from 'vuex'
+import {Toast} from 'vant'
+import {GETUSER} from '@/store/mutation-type.js'
+const OK = 0
+const ERROR = 1
 export default {
-  name:'login',
+  name:'Login',
   data() {
     return {
       show:"message",
       regular:/^1\d{10}/igm,
-      phoneNumber:""
+      phoneNumber:"",
+      time:0,
+      right:false,
+      code:'',
+      name:'',
+      pwd:'',
+      captcha:'',
+      captchaUrl:"http://localhost:4000/captcha?"+Date.now()
     }
   },
   methods: {
+    ...mapActions([GETUSER]),
     goPath(path){
       this.$router.replace(path)
     },
-    getCode(){
-      console.log('getCode');
+    async getCode(){
+      clearInterval(this.timerId)
+      this.time = 30
+      this.timerId = setInterval(()=>{
+        if(this.time > 0) this.time--
+        else clearInterval(this.timerId)
+      },1000)
+      const result = await this.$http.login.getCode({phone:this.phoneNumber})
+      if(result.code === OK) 
+        Toast.success('验证码发送成功!')
+      else if(result.code === ERROR) 
+        Toast.fail('验证码发送失败!')
+      this.time = 0
+    },
+    async login(){
+      if(this.show === 'message'){
+        let messageFlag =  await this.$validator.validateAll(['phone','code'])
+        if(messageFlag){
+          this[GETUSER]({
+            show:this.show,
+            phone:this.phoneNumber,
+            code:this.code
+          })
+        }
+      }else if(this.show === 'password'){
+        let passwordFlag =  await this.$validator.validateAll(['name','pwd','captcha'])
+        if(passwordFlag){
+          this[GETUSER]({
+            show:this.show,
+            name:this.name,
+            pwd:this.pwd,
+            captcha:this.captcha,
+            changeUrl:this.changeUrl
+          })
+        }
+      }
+    },
+    changeUrl(){
+      this.captchaUrl = this.captchaUrl+'?'+ Date.now()
     }
   },
   computed: {
@@ -170,7 +231,6 @@ export default {
                                 &.on
                                     background #02a774
                                 >.switch_circle
-                                    //transform translateX(27px)
                                     position absolute
                                     top -1px
                                     left -1px
@@ -181,6 +241,8 @@ export default {
                                     background #fff
                                     box-shadow 0 2px 4px 0 rgba(0,0,0,.1)
                                     transition transform .3s
+                                    &.right
+                                      transform translateX(27px)
                         .login_hint
                             margin-top 12px
                             color #999
