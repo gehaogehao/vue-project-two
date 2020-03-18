@@ -7,7 +7,7 @@ export default (axios,config={})=>{
     const api = config.api
 
     for (let name in api){
-      const {url,method,isForm,hooks,crosUrl} = api[name]
+      const {url,method,isForm,hooks,crosUrl,token} = api[name]
 
       if(hooks){
         api[name].beforeReq = hooks.beforeReq
@@ -30,6 +30,10 @@ export default (axios,config={})=>{
             url = crosUrl + url
             crosUrl=""
           }
+          let Authorization = token && token()
+          if(Authorization === null || Authorization === undefined){
+            Authorization = ''
+          }
 
           let result = '';
           switch (method){
@@ -41,6 +45,9 @@ export default (axios,config={})=>{
                     url,
                     method,
                     params:transfromData,
+                    headers:{
+                      Authorization:Authorization
+                    }
                 })
                 api[name].afterReq && api[name].afterReq()
                 break;
@@ -50,7 +57,10 @@ export default (axios,config={})=>{
                 result = await axios({
                     url,
                     method,
-                    data:transfromData
+                    data:transfromData,
+                    headers:{
+                      Authorization:Authorization
+                    }
                 })
                 api[name].afterReq && api[name].afterReq()
                 break; 

@@ -1,4 +1,4 @@
-import {GETADDRESSOBJ,GETCATEGORYARR,GETSHOPSARR,GETUSER} from './mutation-type'
+import {GETADDRESSOBJ,GETCATEGORYARR,GETSHOPSARR,GETUSER,CLEARUSER,AUTOLOGIN} from './mutation-type'
 export default {
     [GETADDRESSOBJ](state,addressObj){
         state.addressObj = addressObj
@@ -10,6 +10,14 @@ export default {
         state.shopsArr = shopsArrs
     },
     [GETUSER](state,user){
+        state.user = user
+        state.token = user.token
+    },
+    [CLEARUSER](state){
+        state.user = {}
+        state.token = ""
+    },
+    [AUTOLOGIN](state,user){
         state.user = user
     }
 }

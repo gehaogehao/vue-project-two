@@ -16,7 +16,15 @@ export default {
             url:"/login_pwd",
             method:"post",
             crosUrl:"/4000"
-         },
+        },
+        getAutoLogin:{
+            url:"/auto_login",
+            method:"get",
+            crosUrl:"/4000",
+            token(){
+                return localStorage.getItem('ele-token')
+            }
+        },
     },
     hooks:{
         beforeReq(){

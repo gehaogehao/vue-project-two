@@ -24,11 +24,17 @@ export default {
             url:'/index_category',
             method:'get',
             crosUrl:"/4000",
+            token(){
+                return localStorage.getItem('ele-token')
+            }
         },
         getShops:{
             url:'/shops',
             method:'get',
             crosUrl:"/4000",
+            token(){
+                return localStorage.getItem('ele-token')
+            }
         }
     },
     hooks:{

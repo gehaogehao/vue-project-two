@@ -1,4 +1,4 @@
-import {GETADDRESSOBJ,GETCATEGORYARR,GETSHOPSARR,GETUSER} from './mutation-type'
+import {GETADDRESSOBJ,GETCATEGORYARR,GETSHOPSARR,GETUSER,CLEARUSER,AUTOLOGIN} from './mutation-type'
 import http from '@/http'
 import {Toast} from 'vant'
 import router from '@/router'
@@ -8,6 +8,7 @@ function loginSuccess(commit,data,changeUrl,show){
     commit(GETUSER,data)
     if(show === 'password')
         changeUrl()
+    localStorage.setItem('ele-token',data.token)    
     router.replace('/profile')
 }
 function loginFail(changeUrl,show){
@@ -46,5 +47,22 @@ export default {
         }
         result.code === OK && loginSuccess(commit,result.data,changeUrl,show)
         result.code === ERROR && loginFail(changeUrl,show)
+    },
+    [CLEARUSER]({commit}){
+        commit(CLEARUSER)
+    },
+    async [AUTOLOGIN]({commit}){
+        try {
+            let result = await http.login.getAutoLogin()
+            if(result.code === OK){
+                commit(AUTOLOGIN,result.data)
+            }else if(result.code === ERROR){
+                alert(result.msg)
+                router.replace('/login')
+            }
+        } catch (error) {
+            alert(error.response.data.message)
+            router.replace("/Login");
+        }
     }
 }

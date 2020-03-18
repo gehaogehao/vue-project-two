@@ -3,5 +3,6 @@ export default {
     addressObj:{},
     categoryArr:[],
     shopsArr:[],
-    user:{}
+    user:{},
+    token:""
 }

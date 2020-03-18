@@ -2,6 +2,7 @@ import axios from 'axios'
 import config from './config'
 import {loading,success,fail} from '@/util/toast.js'
 
+
 const contact = axios.create({
     baseURL:config.baseURL || '',
     timeout:config.timeout || 10000
